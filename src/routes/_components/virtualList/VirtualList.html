@@ -18,6 +18,7 @@
     {/if}
   </div>
 </VirtualListContainer>
+<svelte:window on:keyup="onKeyPress(event)"/>
 <style>
   .virtual-list {
     position: relative;
@@ -120,6 +121,47 @@
         let listOffset = node.offsetParent.offsetTop
         this.store.setForRealm({ listOffset })
         stop('calculateListOffset')
+      },
+      onKeyPress(event) {
+          if (event.key == 'j') {
+              event.stopPropagation();
+              this.changeKeyboardFocus(1)
+          } else if (event.key == 'k') {
+              event.stopPropagation();
+              this.changeKeyboardFocus(-1)
+          }
+      },
+      changeKeyboardFocus(movement) {
+          console.log('changeKeyboardFocus: ' + movement)
+          let { keyboardFocusKey, visibleItems } = this.store.get()
+          let len = visibleItems.length
+          let index = -1
+          if (keyboardFocusKey != null) {
+              let i = -1
+              while (++i < len) {
+                  if (keyboardFocusKey == visibleItems[i].key) {
+                      index = i;
+                      break;
+                  }
+              }
+          }
+          keyboardFocusKey = null
+          if (index == -1 && visibleItems.length > 0) {
+              keyboardFocusKey = visibleItems[0].key
+          } else {
+              index += movement
+              if (index >= 0 &&
+                  index < visibleItems.length) {
+                  keyboardFocusKey = visibleItems[index].key
+              } else {
+                  console.log('at end/beginnig')
+              }
+          }
+          if (keyboardFocusKey == null) {
+              return;
+          }
+          this.store.setForRealm({ keyboardFocusKey })
+          console.log('keyboardFocusKey: ' + keyboardFocusKey)
       }
     }
   }
