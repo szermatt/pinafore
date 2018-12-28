@@ -150,7 +150,15 @@
           }
           let itemIndex = -1;
           if (index == -1 && visibleItems.length > 0) {
-              itemIndex = 0;
+              let { scrollTop, listOffset } = this.store.get()
+              let top = scrollTop - listOffset
+              let i = -1
+              while (++i < len) {
+                  if (visibleItems[i].offset >= top) {
+                      itemIndex = i
+                      break
+                  }
+              }
           } else {
               index += movement
               if (index < 0 && visibleItems[0].index == 0) {
