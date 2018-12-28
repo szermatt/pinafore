@@ -34,6 +34,9 @@
   import { mark, stop } from '../../_utils/marks'
   import isEqual from 'lodash-es/isEqual'
   import { observe } from 'svelte-extras'
+  import {
+      getScrollContainer,
+      getOffsetHeight } from '../../_utils/scrollContainer'
 
   const DISTANCE_FROM_BOTTOM_TO_FIRE = 800
   const SCROLL_EVENT_THROTTLE = 1000
@@ -132,7 +135,6 @@
           }
       },
       changeKeyboardFocus(movement) {
-          console.log('changeKeyboardFocus: ' + movement)
           let { keyboardFocusKey, visibleItems } = this.store.get()
           let len = visibleItems.length
           let index = -1
@@ -145,23 +147,27 @@
                   }
               }
           }
-          keyboardFocusKey = null
+          let itemIndex = -1;
           if (index == -1 && visibleItems.length > 0) {
-              keyboardFocusKey = visibleItems[0].key
+              itemIndex = 0;
           } else {
               index += movement
               if (index >= 0 &&
                   index < visibleItems.length) {
-                  keyboardFocusKey = visibleItems[index].key
-              } else {
-                  console.log('at end/beginnig')
+                  itemIndex = index;
               }
           }
-          if (keyboardFocusKey == null) {
+          if (itemIndex == -1) {
               return;
           }
-          this.store.setForRealm({ keyboardFocusKey })
-          console.log('keyboardFocusKey: ' + keyboardFocusKey)
+          let item = visibleItems[itemIndex];
+          keyboardFocusKey = item.key
+          this.store.setForRealm({ keyboardFocusKey });
+          this.scrollTo(item.offset)
+      },
+      scrollTo(top) {
+          // Use smoothScrollToTop instead
+          getScrollContainer().scrollTo({top: top, behavior: 'smooth'})
       }
     }
   }
