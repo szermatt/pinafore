@@ -34,6 +34,7 @@
   import { mark, stop } from '../../_utils/marks'
   import isEqual from 'lodash-es/isEqual'
   import { observe } from 'svelte-extras'
+  import { smoothScrollToTop } from '../../_utils/smoothScrollToTop'
   import {
       getScrollContainer,
       getOffsetHeight } from '../../_utils/scrollContainer'
@@ -152,6 +153,10 @@
               itemIndex = 0;
           } else {
               index += movement
+              if (index < 0 && visibleItems[0].index == 0) {
+                  smoothScrollToTop(getScrollContainer())
+                  return
+              }
               if (index >= 0 &&
                   index < visibleItems.length) {
                   itemIndex = index;
@@ -163,11 +168,12 @@
           let item = visibleItems[itemIndex];
           keyboardFocusKey = item.key
           this.store.setForRealm({ keyboardFocusKey });
-          this.scrollTo(item.offset)
+          this.scrollToVisibleItem(item)
       },
-      scrollTo(top) {
+      scrollToVisibleItem(item) {
           // Use smoothScrollToTop instead
-          getScrollContainer().scrollTo({top: top, behavior: 'smooth'})
+          let { listOffset } = this.store.get()
+          getScrollContainer().scrollTo({top: item.offset + listOffset, behavior: 'smooth'})
       }
     }
   }
