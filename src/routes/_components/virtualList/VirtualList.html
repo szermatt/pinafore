@@ -41,6 +41,7 @@
 
   const DISTANCE_FROM_BOTTOM_TO_FIRE = 800
   const SCROLL_EVENT_THROTTLE = 1000
+  const KEYBOARD_FOCUS_CHECK_DELAY = 600
 
   export default {
     oncreate () {
@@ -129,59 +130,83 @@
       onKeyPress(event) {
           if (event.key == 'j') {
               event.stopPropagation();
-              this.changeKeyboardFocus(1)
+              this.changeKeyboardFocus(1, event.timeStamp)
           } else if (event.key == 'k') {
               event.stopPropagation();
-              this.changeKeyboardFocus(-1)
+              this.changeKeyboardFocus(-1, event.timeStamp)
           }
       },
-      changeKeyboardFocus(movement) {
-          let { keyboardFocusKey, visibleItems } = this.store.get()
-          let len = visibleItems.length
-          let index = -1
-          if (keyboardFocusKey != null) {
-              let i = -1
-              while (++i < len) {
-                  if (keyboardFocusKey == visibleItems[i].key) {
-                      index = i;
-                      break;
-                  }
-              }
-          }
-          let itemIndex = -1;
-          if (index == -1 && visibleItems.length > 0) {
-              let { scrollTop, listOffset } = this.store.get()
-              let top = scrollTop - listOffset
-              let i = -1
-              while (++i < len) {
-                  if (visibleItems[i].offset >= top) {
-                      itemIndex = i
-                      break
-                  }
-              }
+      changeKeyboardFocus(movement, timeStamp) {
+          let { keyboardFocus, visibleItems } = this.store.get()
+          let itemIndex = this.findInVisibleItems(visibleItems, keyboardFocus, timeStamp)
+          if (itemIndex == -1) {
+              itemIndex = this.firstTrulyVisibleItem(visibleItems)
           } else {
-              index += movement
-              if (index < 0 && visibleItems[0].index == 0) {
+              itemIndex += movement
+              if (itemIndex < 0 && visibleItems[0].index == 0) {
                   smoothScrollToTop(getScrollContainer())
                   return
               }
-              if (index >= 0 &&
-                  index < visibleItems.length) {
-                  itemIndex = index;
-              }
           }
-          if (itemIndex == -1) {
-              return;
+          if (itemIndex < 0 ||
+              itemIndex >= visibleItems.length) {
+              return
           }
           let item = visibleItems[itemIndex];
-          keyboardFocusKey = item.key
-          this.store.setForRealm({ keyboardFocusKey });
+          keyboardFocus = {key: item.key, timeStamp: timeStamp}
+          this.store.setForRealm({ keyboardFocus });
           this.scrollToVisibleItem(item)
       },
       scrollToVisibleItem(item) {
           // Use smoothScrollToTop instead
           let { listOffset } = this.store.get()
           getScrollContainer().scrollTo({top: item.offset + listOffset, behavior: 'smooth'})
+      },
+      firstTrulyVisibleItem(visibleItems) {
+          let { scrollTop, listOffset } = this.store.get()
+          let top = scrollTop - listOffset
+          let len = visibleItems.length
+          let i = -1
+          while (++i < len) {
+              if (visibleItems[i].offset >= top) {
+                  return i
+              }
+          }
+          return -1
+      },
+      findInVisibleItems(visibleItems, keyboardFocus, timeStamp) {
+          if (keyboardFocus == null) {
+              return -1
+          }
+          let {
+              listOffset,
+              scrollTop,
+              itemHeights,
+              offsetHeight } = this.store.get()
+          let len = visibleItems.length
+          let i = -1
+          let found = -1
+          while (++i < len) {
+              if (keyboardFocus.key == visibleItems[i].key) {
+                  found = i
+                  break
+              }
+          }
+          if (found == -1) {
+              return -1
+          }
+          if ((timeStamp - keyboardFocus.timeStamp) < KEYBOARD_FOCUS_CHECK_DELAY) {
+              // too recent to run visibility check
+              return found
+          }
+          let item = visibleItems[found]
+          let top = scrollTop - listOffset
+          let bottom = top + offsetHeight
+          if ((item.offset + itemHeights[item.key]) >= top &&
+              item.offset <= bottom) {
+              return found  // visible
+          }
+          return -1
       }
     }
   }

@@ -54,7 +54,7 @@
     store: () => virtualListStore,
     computed: {
         'shown': ({ $itemHeights, key }) => $itemHeights[key] > 0,
-        'keyboardFocus': ({ $keyboardFocusKey, key }) => $keyboardFocusKey == key
+        'keyboardFocus': ({ $keyboardFocus, key }) => $keyboardFocus != null && $keyboardFocus.key == key
     },
     methods: {
       doRecalculateHeight () {
