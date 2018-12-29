@@ -18,7 +18,7 @@
     {/if}
   </div>
 </VirtualListContainer>
-<svelte:window on:keyup="onKeyPress(event)"/>
+<svelte:window on:keyup="onKeyDown(event)"/>
 <style>
   .virtual-list {
     position: relative;
@@ -38,6 +38,10 @@
   import {
       getScrollContainer,
       getOffsetHeight } from '../../_utils/scrollContainer'
+  import {
+        addGlobalShortcut,
+        removeGlobalShortcut,
+        onKeyDown} from '../../_utils/shortcuts'
 
   const DISTANCE_FROM_BOTTOM_TO_FIRE = 800
   const SCROLL_EVENT_THROTTLE = 1000
@@ -95,6 +99,18 @@
         }
         this.calculateListOffset()
       })
+
+      addGlobalShortcut('j', (key, timeStamp) => {
+          this.changeActiveElement(1, timeStamp)
+      })
+        
+      addGlobalShortcut('k', (key, timeStamp) => {
+          this.changeActiveElement(-1, timeStamp)
+      })
+    },
+    ondestroy () {
+      removeGlobalShortcut('j')
+      removeGlobalShortcut('k')
     },
     data: () => ({
       component: null
@@ -127,16 +143,10 @@
         this.store.setForRealm({ listOffset })
         stop('calculateListOffset')
       },
-      onKeyPress(event) {
-          if (event.key == 'j') {
-              event.stopPropagation();
-              this.changeKeyboardFocus(1, event.timeStamp)
-          } else if (event.key == 'k') {
-              event.stopPropagation();
-              this.changeKeyboardFocus(-1, event.timeStamp)
-          }
+      onKeyDown(event) {
+          onKeyDown(event)
       },
-      changeKeyboardFocus(movement, timeStamp) {
+      changeActiveElement(movement, timeStamp) {
           let { keyboardFocus, visibleItems, listOffset } = this.store.get()
           let itemIndex = this.findInVisibleItems(visibleItems, keyboardFocus, timeStamp)
           if (itemIndex == -1) {
