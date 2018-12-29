@@ -34,7 +34,7 @@
   import { mark, stop } from '../../_utils/marks'
   import isEqual from 'lodash-es/isEqual'
   import { observe } from 'svelte-extras'
-  import { smoothScrollToTop } from '../../_utils/smoothScrollToTop'
+  import { smoothScroll } from '../../_utils/smoothScroll'
   import {
       getScrollContainer,
       getOffsetHeight } from '../../_utils/scrollContainer'
@@ -137,14 +137,14 @@
           }
       },
       changeKeyboardFocus(movement, timeStamp) {
-          let { keyboardFocus, visibleItems } = this.store.get()
+          let { keyboardFocus, visibleItems, listOffset } = this.store.get()
           let itemIndex = this.findInVisibleItems(visibleItems, keyboardFocus, timeStamp)
           if (itemIndex == -1) {
               itemIndex = this.firstTrulyVisibleItem(visibleItems)
           } else {
               itemIndex += movement
               if (itemIndex < 0 && visibleItems[0].index == 0) {
-                  smoothScrollToTop(getScrollContainer())
+                  smoothScroll(getScrollContainer(), 0)
                   return
               }
           }
@@ -155,12 +155,7 @@
           let item = visibleItems[itemIndex];
           keyboardFocus = {key: item.key, timeStamp: timeStamp}
           this.store.setForRealm({ keyboardFocus });
-          this.scrollToVisibleItem(item)
-      },
-      scrollToVisibleItem(item) {
-          // Use smoothScrollToTop instead
-          let { listOffset } = this.store.get()
-          getScrollContainer().scrollTo({top: item.offset + listOffset, behavior: 'smooth'})
+          smoothScroll(getScrollContainer(), item.offset + listOffset)
       },
       firstTrulyVisibleItem(visibleItems) {
           let { scrollTop, listOffset } = this.store.get()
