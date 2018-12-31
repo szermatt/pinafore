@@ -1,61 +1,34 @@
 
-const shortcuts = new Map()
-const GLOBAL = '__global__'
-const ANY_KEY = '__any__'
+const scopes = new Map()
 
-export function dispatchShortcut(destinationKey, key, timeStamp) {
-    let m = shortcuts[destinationKey]
-    if (!m) {
-        return false
-    }
-    let handler = m[key]
-    if (!handler) {
-        handler = m[ANY_KEY]
-        if (!handler) {
-            return false
-        }
-    }
-    return handler(key, timeStamp) != false
-}
-
-export function addGlobalShortcut(key, handler) {
-    addShortcut(GLOBAL, key, handler)
-}
-
-export function removeGlobalShortcut(key) {
-    removeShortcut(GLOBAL, key)
-}
-
-export function addShortcutDispatcher(handler) {
-    addShortcut(GLOBAL, ANY_KEY, handler)
-}
-
-export function removeShortcutDispatcher() {
-    removeShortcut(GLOBAL, ANY_KEY)
-}
-
-export function addShortcut(destinationKey, key, handler) {
-    let m = shortcuts[destinationKey]
-    if (!m) {
-        m = new Map()
-        shortcuts[destinationKey] = m
-    }
-    m[key] = handler
-}
-
-export function removeShortcut(destinationKey, key) {
-    let m = shortcuts[destinationKey]
-    if (!m) {
+export function onKeyDownInShortcutScope(scopeKey, event) {
+    let scope = scopes[scopeKey]
+    if (!scope) {
         return
     }
-    m.delete(key)
-    if (m.length == 0) {
-        shortcuts.delete(destinationKey)
+    let len = scope.length
+    let i = -1
+    while (++i < len) {
+        scope[i].onKeyDown(event)
     }
 }
 
-export function onKeyDown(e) {
-    if (dispatchShortcut(GLOBAL, e.key, e.timeStamp)) {
-        event.stopPropagation()
+export function addToShortcutScope(key, component) {
+    let scope = scopes[key]
+    if (!scope) {
+        scope = new Array()
+        scopes[key] = scope
+    }
+    scope.push(component)
+}
+
+export function removeFromShortcutScope(key, component) {
+    let scope = scopes[key]
+    if (!scope) {
+        return
+    }
+    scope.splice(scope.indexOf(component), 1)
+    if (scope.length == 0) {
+        scopes.delete(key)
     }
 }

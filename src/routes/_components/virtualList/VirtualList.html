@@ -38,10 +38,7 @@
   import {
       getScrollContainer,
       getOffsetHeight } from '../../_utils/scrollContainer'
-  import {
-        addGlobalShortcut,
-        removeGlobalShortcut,
-        onKeyDown} from '../../_utils/shortcuts'
+  import { onKeyDownInShortcutScope } from '../../_utils/shortcuts'
 
   const DISTANCE_FROM_BOTTOM_TO_FIRE = 800
   const SCROLL_EVENT_THROTTLE = 1000
@@ -99,14 +96,6 @@
         }
         this.calculateListOffset()
       })
-
-      addGlobalShortcut('j', (key, timeStamp) => {
-          this.changeActiveElement(1, timeStamp)
-      })
-        
-      addGlobalShortcut('k', (key, timeStamp) => {
-          this.changeActiveElement(-1, timeStamp)
-      })
     },
     ondestroy () {
       removeGlobalShortcut('j')
@@ -143,8 +132,24 @@
         this.store.setForRealm({ listOffset })
         stop('calculateListOffset')
       },
-      onKeyDown(event) {
-          onKeyDown(event)
+        onKeyDown(event) {
+          if (event.key == 'j') {
+              event.stopPropagation()
+              this.changeActiveElement(1, event.timeStamp)
+          } else if (event.key == 'k') {
+              event.stopPropagation()
+              this.changeActiveElement(-1, event.timeStamp)
+          } else {
+              let { keyboardFocus, visibleItems } = this.store.get()
+              let itemIndex = this.findInVisibleItems(visibleItems, keyboardFocus, event.timeStamp)
+              if (itemIndex == -1) {
+                  itemIndex = this.firstTrulyVisibleItem(visibleItems)
+                  if (itemIndex == -1) {
+                      return
+                  }
+              }
+              onKeyDownInShortcutScope(visibleItems[itemIndex].key, event)
+          }
       },
       changeActiveElement(movement, timeStamp) {
           let { keyboardFocus, visibleItems, listOffset } = this.store.get()

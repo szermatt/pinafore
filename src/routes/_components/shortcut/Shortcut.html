@@ -1,0 +1,53 @@
+{#if !global}
+<span ref:dummy/>
+{/if}
+<script>
+  import {
+      addToShortcutScope,
+      removeFromShortcutScope } from '../../_utils/shortcuts'
+  export default {
+      data: () => ({global: false, key: null, scopeKey: null}),
+      oncreate() {
+	  let {scopeKey, global} = this.get()
+	  if (!global && !scopeKey) {
+	      let current = this.refs.dummy;
+	      while (current && current.localName != 'body') {
+		  if (current.hasAttribute('shortcut-scope-key')) {
+		      scopeKey = current.getAttribute('shortcut-scope-key')
+  		      break
+	  	  }
+  		  current = current.parentElement
+	      }
+	      if (scopeKey) this.set({scopeKey})
+	  }
+	  if (scopeKey) {
+              addToShortcutScope(scopeKey, this)
+          } else if (!this.listener) {
+	      console.log('add listener')
+	      this.listener = this.onKeyDown.bind(this)
+	      window.addEventListener("keydown", this.listener);
+	  }
+      },
+      ondestroy() {
+          let {scopeKey } = this.get()
+	  if (scopeKey) {
+              removeFromShortcutScope(scopeKey, this)
+          }
+          if (this.listener) {
+  	      window.removeEventListener("keydown", this.listener);
+          }
+      },
+      methods: {
+	  onKeyDown(event) {
+	      let { key } = this.get()
+	      if (event.key != key) {
+                  return
+              }
+	      event.stopPropagation()
+	      this.fire('pressed', {
+		  key: key,
+		  timeStamp: event.timeStamp})
+	  }
+      }
+  };
+</script>

@@ -24,7 +24,8 @@
     href="#fa-star"
     delegateKey={favoriteKey}
     ref:favoriteIcon
-  />
+    />
+  <Shortcut key="f" on:pressed="toggleFavorite()"/>
   <IconButton
     label="Show more options"
     href="#fa-ellipsis-h"
@@ -50,6 +51,7 @@
 </style>
 <script>
   import IconButton from '../IconButton.html'
+  import Shortcut from '../shortcut/Shortcut.html'
   import { store } from '../../_store/store'
   import { registerClickDelegates } from '../../_utils/delegate'
   import { setFavorited } from '../../_actions/favorite'
@@ -68,21 +70,24 @@
         optionsKey
       } = this.get()
       registerClickDelegates(this, {
-        [favoriteKey]: (e) => this.onFavoriteClick(e),
-        [reblogKey]: (e) => this.onReblogClick(e),
-        [replyKey]: (e) => this.onReplyClick(e),
-        [optionsKey]: (e) => this.onOptionsClick(e)
+          [favoriteKey]: (e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              this.toggleFavorite()
+          },
+          [reblogKey]: (e) => this.onReblogClick(e),
+          [replyKey]: (e) => this.onReplyClick(e),
+          [optionsKey]: (e) => this.onOptionsClick(e)
       })
       on('postedStatus', this, this.onPostedStatus)
     },
     components: {
-      IconButton
+        IconButton,
+        Shortcut
     },
     store: () => store,
     methods: {
-      onFavoriteClick (e) {
-        e.preventDefault()
-        e.stopPropagation()
+      toggleFavorite () {
         let { originalStatusId, favorited } = this.get()
         let newFavoritedValue = !favorited
         /* no await */ setFavorited(originalStatusId, newFavoritedValue)

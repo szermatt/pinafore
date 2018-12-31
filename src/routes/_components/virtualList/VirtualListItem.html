@@ -1,6 +1,7 @@
 <div class="virtual-list-item list-item {shown ? 'shown' : ''} {keyboardFocus ? 'keyboardFocus' : ''}"
      aria-hidden={!shown}
      virtual-list-key={key}
+     shortcut-scope-key={key}
      ref:node
      style="transform: translateY({offset}px);" >
   <svelte:component this={component}
