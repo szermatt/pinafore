@@ -1,4 +1,4 @@
-<div class="virtual-list-item list-item {shown ? 'shown' : ''} {keyboardFocus ? 'keyboardFocus' : ''}"
+<div class="virtual-list-item list-item {shown ? 'shown' : ''}"
      aria-hidden={!shown}
      virtual-list-key={key}
      ref:node
@@ -22,9 +22,6 @@
   .virtual-list-item.shown {
     opacity: 1;
     pointer-events: auto;
-  }
-  .virtual-list-item.keyboardFocus {
-      background-color: #f00;
   }
 </style>
 <script>
@@ -54,8 +51,7 @@
     },
     store: () => virtualListStore,
     computed: {
-        'shown': ({ $itemHeights, key }) => $itemHeights[key] > 0,
-        'keyboardFocus': ({ $keyboardFocus, key }) => $keyboardFocus != null && $keyboardFocus.key == key
+      'shown': ({ $itemHeights, key }) => $itemHeights[key] > 0
     },
     methods: {
       doRecalculateHeight () {
