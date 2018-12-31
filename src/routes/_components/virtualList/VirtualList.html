@@ -38,7 +38,9 @@
   import {
       getScrollContainer,
       getOffsetHeight } from '../../_utils/scrollContainer'
-  import { onKeyDownInShortcutScope } from '../../_utils/shortcuts'
+  import {
+      isShortcutEvent,
+      onKeyDownInShortcutScope } from '../../_utils/shortcuts'
 
   const DISTANCE_FROM_BOTTOM_TO_FIRE = 800
   const SCROLL_EVENT_THROTTLE = 1000
@@ -128,24 +130,27 @@
         this.store.setForRealm({ listOffset })
         stop('calculateListOffset')
       },
-        onKeyDown(event) {
-          if (event.key == 'j') {
-              event.stopPropagation()
-              this.changeActiveElement(1, event.timeStamp)
-          } else if (event.key == 'k') {
-              event.stopPropagation()
-              this.changeActiveElement(-1, event.timeStamp)
-          } else {
-              let { keyboardFocus, visibleItems } = this.store.get()
-              let itemIndex = this.findInVisibleItems(visibleItems, keyboardFocus, event.timeStamp)
-              if (itemIndex == -1) {
-                  itemIndex = this.firstTrulyVisibleItem(visibleItems)
-                  if (itemIndex == -1) {
-                      return
-                  }
-              }
-              onKeyDownInShortcutScope(visibleItems[itemIndex].key, event)
-          }
+      onKeyDown(event) {
+        if (!isShortcutEvent(event)) {
+          return;
+        }
+        if (event.key == 'j') {
+            event.stopPropagation()
+            this.changeActiveElement(1, event.timeStamp)
+        } else if (event.key == 'k') {
+            event.stopPropagation()
+            this.changeActiveElement(-1, event.timeStamp)
+        } else {
+            let { keyboardFocus, visibleItems } = this.store.get()
+            let itemIndex = this.findInVisibleItems(visibleItems, keyboardFocus, event.timeStamp)
+            if (itemIndex == -1) {
+                itemIndex = this.firstTrulyVisibleItem(visibleItems)
+                if (itemIndex == -1) {
+                    return
+                }
+            }
+            onKeyDownInShortcutScope(visibleItems[itemIndex].key, event)
+        }
       },
       changeActiveElement(movement, timeStamp) {
           let { keyboardFocus, visibleItems, listOffset } = this.store.get()

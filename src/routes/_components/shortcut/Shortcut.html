@@ -1,6 +1,7 @@
 <svelte:target ref:target/>
 <script>
   import {
+      isShortcutEvent,
       addToShortcutScope,
       removeFromShortcutScope } from '../../_utils/shortcuts'
   export default {
@@ -26,6 +27,9 @@
       },
       methods: {
 	  onKeyDown(event) {
+              if (!isShortcutEvent(event)) {
+                  return
+              }
 	      let { key } = this.get()
 	      if (event.key != key) {
                   return

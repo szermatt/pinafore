@@ -1,6 +1,14 @@
 
 const scopes = new Map()
 
+export function isShortcutEvent(event) {
+    let target = event.target;
+    return !target || !(target.isContentEditable ||
+                        target.tagName == 'INPUT' ||
+                        target.tagName == 'TEXTAREA' ||
+                        target.tagName == 'SELECT')
+}
+
 export function onKeyDownInShortcutScope(scopeKey, event) {
     let scope = scopes[scopeKey]
     if (!scope) {
