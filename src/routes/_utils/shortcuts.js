@@ -1,7 +1,6 @@
 
 const scopes = new Map()
 let inModal = false
-let lastEventTimeStamp = 0
 
 export function restrictToModalShortcuts(modal) {
     inModal = modal
@@ -19,11 +18,6 @@ export function acceptShortcutEvent(event, modal) {
     if ((inModal && !modal) || (!inModal && modal)) {
         return false
     }
-    if (event.timeStamp == lastEventTimeStamp) {
-        return false // duplicate
-    }
-    lastEventTimeStamp = event.timeStamp
-
     return true
 }
 
