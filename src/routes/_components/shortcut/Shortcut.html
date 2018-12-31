@@ -1,11 +1,11 @@
 <svelte:target ref:target/>
 <script>
   import {
-      isShortcutEvent,
+      acceptShortcutEvent,
       addToShortcutScope,
       removeFromShortcutScope } from '../../_utils/shortcuts'
   export default {
-      data: () => ({scope: null, key: null}),
+      data: () => ({scope: null, key: null, modal: false}),
       oncreate() {
 	  let {scope} = this.get()
 	  if (scope) {
@@ -25,18 +25,27 @@
   	      window.removeEventListener("keydown", this.listener);
           }
       },
+      computed: {
+          keySet: ({key}) => {
+              let keySet = new Set()
+              if (key) {
+                  key.split('|').forEach((key) => keySet.add(key))
+              }
+              return keySet
+          }
+      },
       methods: {
 	  onKeyDown(event) {
-              if (!isShortcutEvent(event)) {
+	      let { keySet, modal } = this.get()
+	      if (!keySet.has(event.key)) {
                   return
               }
-	      let { key } = this.get()
-	      if (event.key != key) {
+              if (!acceptShortcutEvent(event, modal)) {
                   return
               }
 	      event.stopPropagation()
 	      this.fire('pressed', {
-		  key: key,
+		  key: event.key,
 		  timeStamp: event.timeStamp})
 	  }
       }

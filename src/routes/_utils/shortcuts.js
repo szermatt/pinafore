@@ -1,12 +1,30 @@
 
 const scopes = new Map()
+let inModal = false
+let lastEventTimeStamp = 0
 
-export function isShortcutEvent(event) {
+export function restrictToModalShortcuts(modal) {
+    inModal = modal
+}
+
+export function acceptShortcutEvent(event, modal) {
     let target = event.target;
-    return !target || !(target.isContentEditable ||
-                        target.tagName == 'INPUT' ||
-                        target.tagName == 'TEXTAREA' ||
-                        target.tagName == 'SELECT')
+    if (target && (target.isContentEditable ||
+                   target.tagName == 'INPUT' ||
+                   target.tagName == 'TEXTAREA' ||
+                   target.tagName == 'SELECT')) {
+        return false
+    }
+
+    if ((inModal && !modal) || (!inModal && modal)) {
+        return false
+    }
+    if (event.timeStamp == lastEventTimeStamp) {
+        return false // duplicate
+    }
+    lastEventTimeStamp = event.timeStamp
+
+    return true
 }
 
 export function onKeyDownInShortcutScope(scopeKey, event) {
