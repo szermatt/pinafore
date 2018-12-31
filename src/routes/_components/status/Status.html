@@ -154,7 +154,8 @@
     data: () => ({
       notification: void 0,
       replyVisibility: void 0,
-      contentPreloaded: false
+      contentPreloaded: false,
+      shortcutScope: null
     }),
     store: () => store,
     methods: {
@@ -245,7 +246,7 @@
         account, accountId, uuid, isStatusInNotification, isStatusInOwnThread,
         originalAccount, originalAccountId, spoilerShown, visibility, replyShown,
         replyVisibility, spoilerText, originalStatus, originalStatusId, inReplyToId,
-        createdAtDate, timeagoFormattedDate }) => ({
+        createdAtDate, timeagoFormattedDate, shortcutScope }) => ({
         notification,
         notificationId,
         status,
@@ -267,7 +268,8 @@
         originalStatusId,
         inReplyToId,
         createdAtDate,
-        timeagoFormattedDate
+        timeagoFormattedDate,
+        shortcutScope
       })
     }
   }

@@ -1,27 +1,14 @@
-{#if !global}
-<span ref:dummy/>
-{/if}
+<svelte:target ref:target/>
 <script>
   import {
       addToShortcutScope,
       removeFromShortcutScope } from '../../_utils/shortcuts'
   export default {
-      data: () => ({global: false, key: null, scopeKey: null}),
+      data: () => ({scope: null, key: null}),
       oncreate() {
-	  let {scopeKey, global} = this.get()
-	  if (!global && !scopeKey) {
-	      let current = this.refs.dummy;
-	      while (current && current.localName != 'body') {
-		  if (current.hasAttribute('shortcut-scope-key')) {
-		      scopeKey = current.getAttribute('shortcut-scope-key')
-  		      break
-	  	  }
-  		  current = current.parentElement
-	      }
-	      if (scopeKey) this.set({scopeKey})
-	  }
-	  if (scopeKey) {
-              addToShortcutScope(scopeKey, this)
+	  let {scope} = this.get()
+	  if (scope) {
+              addToShortcutScope(scope, this)
           } else if (!this.listener) {
 	      console.log('add listener')
 	      this.listener = this.onKeyDown.bind(this)
@@ -29,9 +16,9 @@
 	  }
       },
       ondestroy() {
-          let {scopeKey } = this.get()
-	  if (scopeKey) {
-              removeFromShortcutScope(scopeKey, this)
+          let {scope} = this.get()
+	  if (scope) {
+              removeFromShortcutScope(scope, this)
           }
           if (this.listener) {
   	      window.removeEventListener("keydown", this.listener);

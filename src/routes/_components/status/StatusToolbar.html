@@ -25,13 +25,15 @@
     delegateKey={favoriteKey}
     ref:favoriteIcon
     />
-  <Shortcut key="f" on:pressed="toggleFavorite()"/>
   <IconButton
     label="Show more options"
     href="#fa-ellipsis-h"
     delegateKey={optionsKey}
   />
 </div>
+{#if shortcutScope}
+  <Shortcut scope="{shortcutScope}" key="f" on:pressed="toggleFavorite()"/>
+{/if}
 <style>
   .status-toolbar {
     grid-area: toolbar;
