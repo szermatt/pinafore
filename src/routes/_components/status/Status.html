@@ -35,6 +35,9 @@
     <StatusComposeBox {...params} on:recalculateHeight />
   {/if}
 </article>
+{#if shortcutScope}
+<Shortcut scope="{shortcutScope}" key="o" on:pressed="open()"/>
+{/if}
 
 <style>
   .status-article {
@@ -106,6 +109,7 @@
   import StatusSpoiler from './StatusSpoiler.html'
   import StatusComposeBox from './StatusComposeBox.html'
   import StatusMentions from './StatusMentions.html'
+  import Shortcut from '../shortcut/Shortcut.html'
   import { store } from '../../_store/store'
   import { goto } from '../../../../__sapper__/client'
   import { registerClickDelegate } from '../../_utils/delegate'
@@ -149,7 +153,8 @@
       StatusContent,
       StatusSpoiler,
       StatusComposeBox,
-      StatusMentions
+      StatusMentions,
+      Shortcut
     },
     data: () => ({
       notification: void 0,
@@ -179,6 +184,9 @@
 
         e.preventDefault()
         e.stopPropagation()
+        this.open()
+      },
+      open () {
         let { originalStatusId } = this.get()
         goto(`/statuses/${originalStatusId}`)
       }
