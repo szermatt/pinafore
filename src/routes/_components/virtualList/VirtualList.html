@@ -35,7 +35,7 @@
   import isEqual from 'lodash-es/isEqual'
   import { observe } from 'svelte-extras'
   import { smoothScroll } from '../../_utils/smoothScroll'
-  import { scrollIntoViewIfNeeded } from '../../_utils/scrollIntoView'
+  import { isVisible, scrollIntoViewIfNeeded } from '../../_utils/scrollIntoView'
   import {
       getScrollContainer,
       getOffsetHeight } from '../../_utils/scrollContainer'
@@ -215,13 +215,7 @@
               return found
           }
           let item = visibleItems[found]
-          let top = scrollTop - listOffset
-          let bottom = top + offsetHeight
-          if ((item.offset + itemHeights[item.key]) >= top &&
-              item.offset <= bottom) {
-              return found  // visible
-          }
-          return -1
+          return isVisible(document.getElementById('virtual-list-item-' + item.key)) ? found : -1
       }
     }
   }

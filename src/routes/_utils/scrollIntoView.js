@@ -7,11 +7,12 @@ function getTopOverlay() {
     return document.getElementById("main-nav").clientHeight
 }
 
-export function isInvisible(element) {
+export function isVisible(element) {
+    if (!element) {
+        return false
+    }
     let rect = element.getBoundingClientRect()
-    return rect.top >= getOffsetHeight() ||
-        rect.bottom < 0 ||
-        rect.bottom < getTopOverlay()
+    return rect.top < getOffsetHeight() && rect.bottom >= getTopOverlay()
 }
 
 export function scrollIntoViewIfNeeded(element) {
