@@ -35,6 +35,7 @@
   import isEqual from 'lodash-es/isEqual'
   import { observe } from 'svelte-extras'
   import { smoothScroll } from '../../_utils/smoothScroll'
+  import { scrollIntoViewIfNeeded } from '../../_utils/scrollIntoView'
   import {
       getScrollContainer,
       getOffsetHeight } from '../../_utils/scrollContainer'
@@ -174,7 +175,7 @@
           let item = visibleItems[itemIndex];
           keyboardFocus = {key: item.key, timeStamp: timeStamp}
           this.store.setForRealm({ keyboardFocus });
-          smoothScroll(getScrollContainer(), item.offset + listOffset)
+          scrollIntoViewIfNeeded(document.getElementById('virtual-list-item-' + item.key))
       },
       firstTrulyVisibleItem(visibleItems) {
           let { scrollTop, listOffset } = this.store.get()

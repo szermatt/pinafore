@@ -1,6 +1,6 @@
 <div class="virtual-list-item list-item {shown ? 'shown' : ''} {keyboardFocus ? 'keyboardFocus' : ''}"
+     id={`virtual-list-item-${key}`}
      aria-hidden={!shown}
-     virtual-list-key={key}
      ref:node
      style="transform: translateY({offset}px);" >
   <svelte:component this={component}
