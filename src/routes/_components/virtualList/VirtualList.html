@@ -73,6 +73,7 @@
         stop('set items')
       })
       this.observe('allVisibleItemsHaveHeight', allVisibleItemsHaveHeight => {
+        this.calculateListOffset()
         if (allVisibleItemsHaveHeight) {
           this.fire('initializedVisibleItems')
         }
@@ -157,12 +158,14 @@
           let itemIndex = this.findInVisibleItems(visibleItems, keyboardFocus, timeStamp)
           if (itemIndex == -1) {
               itemIndex = this.firstTrulyVisibleItem(visibleItems)
-          } else {
-              itemIndex += movement
-              if (itemIndex < 0 && visibleItems[0].index == 0) {
-                  smoothScroll(getScrollContainer(), 0)
+              if (itemIndex == -1) {
                   return
               }
+          }
+          itemIndex += movement
+          if (itemIndex < 0 && visibleItems[0].index == 0) {
+              smoothScroll(getScrollContainer(), 0)
+              return
           }
           if (itemIndex < 0 ||
               itemIndex >= visibleItems.length) {
