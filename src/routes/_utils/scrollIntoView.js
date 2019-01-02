@@ -21,7 +21,6 @@ export function firstVisibleElementIndex(items, itemElementFunction) {
     let offsetHeight = getOffsetHeight()
     let topOverlay = getTopOverlay();
     let len = items.length
-    console.log('items.length=' + len)
     let i = -1
     while (++i < len) {
         let element = itemElementFunction(items[i]);
