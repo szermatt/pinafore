@@ -20,7 +20,7 @@
 </VirtualListContainer>
 <ScrollListShortcuts
   bind:items=$visibleItems
-  bind:activeItemKey=$keyboardFocus
+  bind:activeItemKey=$activeItem
   itemToKey={(visibleItem) => visibleItem.key} />
 <style>
   .virtual-list {

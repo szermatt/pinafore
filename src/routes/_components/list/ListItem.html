@@ -1,21 +1,17 @@
-<div class="list-item {hasKeyboardFocus ? 'keyboardFocus' : ''}"
+<div class="list-item"
      id={`list-item-${key}`} >
   <svelte:component this={component}
               virtualProps={props}
               virtualIndex={index}
               virtualLength={length}
               virtualKey={key}
+              active={active}
   />
 </div>
-<style>
-  .list-item.keyboardFocus {
-      background-color: #f00;
-  }
-</style>
 <script>
   export default {
       computed: {
-          'hasKeyboardFocus': ({ $keyboardFocus, key }) => $keyboardFocus == key
+          'active': ({ $activeItem, key }) => $activeItem == key
       }
   }
 </script>
