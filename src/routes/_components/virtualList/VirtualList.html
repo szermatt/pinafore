@@ -18,7 +18,10 @@
     {/if}
   </div>
 </VirtualListContainer>
-<svelte:window on:keyup="onKeyDown(event)"/>
+<ScrollListShortcuts
+  bind:items=$visibleItems
+  bind:activeItemKey=$keyboardFocus
+  itemToKey={(visibleItem) => visibleItem.key} />
 <style>
   .virtual-list {
     position: relative;
@@ -29,23 +32,15 @@
   import VirtualListLazyItem from './VirtualListLazyItem'
   import VirtualListFooter from './VirtualListFooter.html'
   import VirtualListHeader from './VirtualListHeader.html'
+  import ScrollListShortcuts from '../shortcut/ScrollListShortcuts.html'
   import { virtualListStore } from './virtualListStore'
   import throttle from 'lodash-es/throttle'
   import { mark, stop } from '../../_utils/marks'
   import isEqual from 'lodash-es/isEqual'
   import { observe } from 'svelte-extras'
-  import { smoothScroll } from '../../_utils/smoothScroll'
-  import { isVisible, scrollIntoViewIfNeeded } from '../../_utils/scrollIntoView'
-  import {
-      getScrollContainer,
-      getOffsetHeight } from '../../_utils/scrollContainer'
-  import {
-      acceptShortcutEvent,
-      onKeyDownInShortcutScope } from '../../_utils/shortcuts'
 
   const DISTANCE_FROM_BOTTOM_TO_FIRE = 800
   const SCROLL_EVENT_THROTTLE = 1000
-  const KEYBOARD_FOCUS_CHECK_DELAY = 600
 
   export default {
     oncreate () {
@@ -109,7 +104,8 @@
       VirtualListContainer,
       VirtualListLazyItem,
       VirtualListFooter,
-      VirtualListHeader
+      VirtualListHeader,
+      ScrollListShortcuts
     },
     computed: {
       distanceFromBottom: ({ $scrollHeight, $scrollTop, $offsetHeight }) => {
@@ -131,91 +127,6 @@
         let listOffset = node.offsetParent.offsetTop
         this.store.setForRealm({ listOffset })
         stop('calculateListOffset')
-      },
-      onKeyDown(event) {
-        if (!acceptShortcutEvent(event, /*modal=*/ false)) {
-          return;
-        }
-        if (event.key == 'j' || event.key == 'ArrowDown') {
-            event.stopPropagation()
-            this.changeActiveElement(1, event.timeStamp)
-        } else if (event.key == 'k' || event.key == 'ArrowUp') {
-            event.stopPropagation()
-            this.changeActiveElement(-1, event.timeStamp)
-        } else {
-            let { keyboardFocus, visibleItems } = this.store.get()
-            let itemIndex = this.findInVisibleItems(visibleItems, keyboardFocus, event.timeStamp)
-            if (itemIndex == -1) {
-                itemIndex = this.firstTrulyVisibleItem(visibleItems)
-                if (itemIndex == -1) {
-                    return
-                }
-            }
-            onKeyDownInShortcutScope(visibleItems[itemIndex].key, event)
-        }
-      },
-      changeActiveElement(movement, timeStamp) {
-          let { keyboardFocus, visibleItems, listOffset } = this.store.get()
-          let itemIndex = this.findInVisibleItems(visibleItems, keyboardFocus, timeStamp)
-          if (itemIndex == -1) {
-              itemIndex = this.firstTrulyVisibleItem(visibleItems)
-              if (itemIndex == -1) {
-                  return
-              }
-          }
-          itemIndex += movement
-          if (itemIndex < 0 && visibleItems[0].index == 0) {
-              smoothScroll(getScrollContainer(), 0)
-              return
-          }
-          if (itemIndex < 0 ||
-              itemIndex >= visibleItems.length) {
-              return
-          }
-          let item = visibleItems[itemIndex];
-          keyboardFocus = {key: item.key, timeStamp: timeStamp}
-          this.store.setForRealm({ keyboardFocus });
-          scrollIntoViewIfNeeded(document.getElementById('virtual-list-item-' + item.key))
-      },
-      firstTrulyVisibleItem(visibleItems) {
-          let { scrollTop, listOffset } = this.store.get()
-          let top = scrollTop - listOffset
-          let len = visibleItems.length
-          let i = -1
-          while (++i < len) {
-              if (visibleItems[i].offset >= top) {
-                  return i
-              }
-          }
-          return -1
-      },
-      findInVisibleItems(visibleItems, keyboardFocus, timeStamp) {
-          if (keyboardFocus == null) {
-              return -1
-          }
-          let {
-              listOffset,
-              scrollTop,
-              itemHeights,
-              offsetHeight } = this.store.get()
-          let len = visibleItems.length
-          let i = -1
-          let found = -1
-          while (++i < len) {
-              if (keyboardFocus.key == visibleItems[i].key) {
-                  found = i
-                  break
-              }
-          }
-          if (found == -1) {
-              return -1
-          }
-          if ((timeStamp - keyboardFocus.timeStamp) < KEYBOARD_FOCUS_CHECK_DELAY) {
-              // too recent to run visibility check
-              return found
-          }
-          let item = visibleItems[found]
-          return isVisible(document.getElementById('virtual-list-item-' + item.key)) ? found : -1
       }
     }
   }

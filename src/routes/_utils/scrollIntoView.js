@@ -12,7 +12,28 @@ export function isVisible(element) {
         return false
     }
     let rect = element.getBoundingClientRect()
-    return rect.top < getOffsetHeight() && rect.bottom >= getTopOverlay()
+    let offsetHeight = getOffsetHeight()
+    let topOverlay = getTopOverlay();
+    return rect.top < offsetHeight && rect.bottom >= topOverlay
+}
+
+export function firstVisibleElementIndex(items, itemElementFunction) {
+    let offsetHeight = getOffsetHeight()
+    let topOverlay = getTopOverlay();
+    let len = items.length
+    console.log('items.length=' + len)
+    let i = -1
+    while (++i < len) {
+        let element = itemElementFunction(items[i]);
+        if (!element) {
+            continue
+        }
+        let rect = element.getBoundingClientRect()
+        if (rect.top < offsetHeight && rect.bottom >= topOverlay) {
+            return i
+        }
+    }
+    return -1
 }
 
 export function scrollIntoViewIfNeeded(element) {
