@@ -13,6 +13,13 @@
     {/each}
 	</ul>
 </nav>
+<Shortcut key="g t" on:pressed="gotoPage('/federated')"/>
+<Shortcut key="g f" on:pressed="gotoPage('/favorites')"/>
+<Shortcut key="g l" on:pressed="gotoPage('/local')"/>
+<Shortcut key="g h" on:pressed="gotoPage('/')"/>
+<Shortcut key="g n" on:pressed="gotoPage('/notifications')"/>
+<Shortcut key="g c" on:pressed="gotoPage('/community')"/>
+<Shortcut key="s" on:pressed="gotoPage('/search')"/>
 
 <style>
 	.main-nav {
@@ -47,12 +54,19 @@
 </style>
 <script>
   import NavItem from './NavItem'
+  import Shortcut from './shortcut/Shortcut.html'
   import { store } from '../_store/store'
 
   export default {
     store: () => store,
     components: {
-      NavItem
-    }
+      NavItem,
+      Shortcut
+    },
+    methods: {
+        gotoPage(href) {
+            window.location.href = href
+        }
+    },
   }
 </script>
