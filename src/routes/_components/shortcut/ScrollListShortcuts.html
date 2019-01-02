@@ -18,7 +18,7 @@
           //items: [],
           activeItemKey: null,
           activeItemChangeTime: 0,
-          //itemToKey: (item) => item,
+          itemToKey: (item) => item,
           keyToElement: (key) => document.getElementById('list-item-' + key)
       }),
       computed: {
@@ -84,6 +84,8 @@
                   }
               }
               if (index == 0 && movement == -1) {
+                  activeItemKey = null
+                  this.set({ activeItemKey })
                   smoothScroll(getScrollContainer(), 0)
                   return
               }
