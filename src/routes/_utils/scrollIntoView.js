@@ -29,7 +29,10 @@ export function firstVisibleElementIndex(items, itemElementFunction) {
         }
         let rect = element.getBoundingClientRect()
         if (rect.top < offsetHeight && rect.bottom >= topOverlay) {
-            return i
+            return {
+                first: i,
+                firstComplete: (
+                    rect.top == topOverlay || i == (len - 1)) ? i : i + 1}
         }
     }
     return -1

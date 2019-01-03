@@ -43,7 +43,7 @@
               let activeItemKey = this.checkActiveItem(event.timeStamp)
               if (!activeItemKey) {
                   let { items, itemToKey, itemToElement } = this.get()
-                  let index = firstVisibleElementIndex(items, itemToElement)
+                  let index = firstVisibleElementIndex(items, itemToElement).first
                   if (index != -1) {
                       activeItemKey = itemToKey(items[index])
                   }
@@ -90,7 +90,9 @@
                   return
               }
               if (index == -1) {
-                  index = firstVisibleElementIndex(items, itemToElement)
+                  let { first, firstComplete } = firstVisibleElementIndex(
+                      items, itemToElement)
+                  index = (movement > 0) ? firstComplete : first
               } else {
                   index += movement
               }
