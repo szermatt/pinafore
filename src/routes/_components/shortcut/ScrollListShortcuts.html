@@ -16,10 +16,9 @@
       data: () => ({
           modal: false,
           //items: [],
-          activeItemKey: null,
-          activeItemChangeTime: 0,
           itemToKey: (item) => item,
-          keyToElement: (key) => document.getElementById('list-item-' + key)
+          keyToElement: (key) => document.getElementById('list-item-' + key),
+          activeItemChangeTime: 0
       }),
       computed: {
           itemToElement: ({keyToElement, itemToKey}) => (item) => keyToElement(itemToKey(item))
@@ -51,19 +50,6 @@
               if (activeItemKey) {
                   onKeyDownInShortcutScope(activeItemKey, event)
               }
-          },
-          checkActiveItem(timeStamp) {
-              let {
-                  activeItemKey,
-                  activeItemChangeTime,
-                  keyToElement } = this.get()
-              if (activeItemKey &&
-                  (timeStamp - activeItemChangeTime) > VISIBILITY_CHECK_DELAY_MS &&
-                  !isVisible(keyToElement(activeItemKey))) {
-                  activeItemKey = null
-                  this.set({activeItemKey})
-              }
-              return activeItemKey
           },
           changeActiveItem(movement, timeStamp) {
               let {
@@ -98,10 +84,26 @@
               }
               if (index >= 0 && index < items.length) {
                   activeItemKey = itemToKey(items[index])
-                  let activeItemChangeTime = timeStamp
-                  this.set({ activeItemKey, activeItemChangeTime})
+                  this.setActiveItem(activeItemKey, timeStamp)
                   scrollIntoViewIfNeeded(keyToElement(activeItemKey))
               }
+          },
+          checkActiveItem(timeStamp) {
+              let { activeItem } = this.store.get()
+              if (!activeItem) {
+                  return null
+              }
+              let { activeItemChangeTime, keyToElement } = this.get()
+              if ((timeStamp - activeItemChangeTime) > VISIBILITY_CHECK_DELAY_MS &&
+                  !isVisible(keyToElement(activeItem))) {
+                  this.setActiveItem(null, 0)
+                  return null
+              }
+              return activeItem
+          },
+          setActiveItem(key, timeStamp) {
+              this.set({ activeItemChangeTime: timeStamp})
+              this.store.setForRealm({activeItem: key})
           }
       }
   }
