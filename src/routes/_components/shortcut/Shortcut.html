@@ -1,27 +1,16 @@
 <script>
   import {
-      acceptShortcutEvent,
       addToShortcutScope,
       removeFromShortcutScope } from '../../_utils/shortcuts'
   export default {
-      data: () => ({scope: null, key: null, modal: false, currentPrefixMap: null}),
+      data: () => ({scope: 'global', key: null, currentPrefixMap: null}),
       oncreate() {
 	  let {scope} = this.get()
-	  if (scope) {
-              addToShortcutScope(scope, this)
-          } else if (!this.listener) {
-	      this.listener = this.onKeyDown.bind(this)
-	      window.addEventListener("keydown", this.listener);
-	  }
+          addToShortcutScope(scope, this)
       },
       ondestroy() {
           let {scope} = this.get()
-	  if (scope) {
-              removeFromShortcutScope(scope, this)
-          }
-          if (this.listener) {
-  	      window.removeEventListener("keydown", this.listener);
-          }
+          removeFromShortcutScope(scope, this)
       },
       computed: {
           keyMap: ({key}) => {
@@ -49,10 +38,7 @@
       },
       methods: {
 	  onKeyDown(event) {
-	      let { keyMap, currentPrefixMap, modal } = this.get()
-              if (!acceptShortcutEvent(event, modal)) {
-                  return
-              }
+	      let { keyMap, currentPrefixMap } = this.get()
               let mapValue = ((currentPrefixMap && currentPrefixMap[event.key])
                               || keyMap[event.key])
               if (!mapValue) {

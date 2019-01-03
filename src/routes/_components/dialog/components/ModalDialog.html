@@ -24,7 +24,7 @@
     <slot></slot>
   </div>
 </div>
-<Shortcut modal="true" key="Backspace|Escape" on:pressed="closeDialog(id)"/>
+<Shortcut scope="modal" key="Backspace|Escape" on:pressed="closeDialog(id)"/>
 <style>
   :global(.modal-dialog[aria-hidden='true']) {
     display: none;
@@ -130,7 +130,9 @@
   import { A11yDialog } from '../../../_thirdparty/a11y-dialog/a11y-dialog'
   import { classname } from '../../../_utils/classname'
   import { on, emit } from '../../../_utils/eventBus'
-  import { restrictToModalShortcuts } from '../../../_utils/shortcuts'
+  import {
+      pushShortcutScope,
+      popShortcutScope } from '../../../_utils/shortcuts'
 
   export default {
     oncreate () {
@@ -146,10 +148,10 @@
       })
       on('showDialog', this, this.showDialog)
       on('closeDialog', this, this.closeDialog)
-      restrictToModalShortcuts(true)
+      pushShortcutScope('modal')
     },
     ondestroy () {
-      restrictToModalShortcuts(false)
+      popShortcutScope('modal')
     },
     components: { Shortcut },
     data: () => ({

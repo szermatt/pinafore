@@ -1,11 +1,11 @@
-<svelte:window on:keyup="onKeyDown(event)"/>
 <script>
   import {
       isVisible,
       firstVisibleElementIndex,
       scrollIntoViewIfNeeded } from '../../_utils/scrollIntoView'
   import {
-      acceptShortcutEvent,
+      addToShortcutScope,
+      removeFromShortcutScope,
       onKeyDownInShortcutScope } from '../../_utils/shortcuts'
   import { smoothScroll } from '../../_utils/smoothScroll'
   import { getScrollContainer } from '../../_utils/scrollContainer'
@@ -14,7 +14,7 @@
   
   export default {
       data: () => ({
-          modal: false,
+          scope: 'global',
           //items: [],
           itemToKey: (item) => item,
           keyToElement: (key) => document.getElementById('list-item-' + key),
@@ -23,12 +23,16 @@
       computed: {
           itemToElement: ({keyToElement, itemToKey}) => (item) => keyToElement(itemToKey(item))
       },
+      oncreate() {
+          let { scope } = this.get()
+          addToShortcutScope(scope, this)
+      },
+      ondestroy() {
+          let { scope } = this.get()
+          removeFromShortcutScope(scope, this)
+      },
       methods: {
           onKeyDown(event) {
-              let { modal } = this.get()
-              if (!acceptShortcutEvent(event, modal)) {
-                  return;
-              }
               if (event.key == 'j' || event.key == 'ArrowDown') {
                   event.stopPropagation()
                   this.changeActiveItem(1, event.timeStamp)
@@ -43,7 +47,7 @@
               if (!activeItemKey) {
                   let { items, itemToKey, itemToElement } = this.get()
                   let index = firstVisibleElementIndex(items, itemToElement).first
-                  if (index != -1) {
+                  if (index >= 0) {
                       activeItemKey = itemToKey(items[index])
                   }
               }
