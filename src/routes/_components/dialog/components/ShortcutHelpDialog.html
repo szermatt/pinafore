@@ -4,6 +4,7 @@
   background="var(--muted-modal-bg)"
   muted="true"
   className="shortcut-help-modal-dialog">
+  
   <h1>Keyboard Shortcuts</h1>
 
   <ul>
@@ -27,16 +28,16 @@
 </ModalDialog>
 <style>
   li {
-      list-style-type:none
+    list-style-type:none
   }
   kbd {
-      color: #333;
-      display: inline-block;
-      border: 1px solid #333;
-      border-radius: 2px;
-      padding: 0.1em;
-      margin: 0.2em;
-      background-color: #dadada;
+    color: #333;
+    display: inline-block;
+    border: 1px solid #333;
+    border-radius: 2px;
+    padding: 0.1em;
+    margin: 0.2em;
+    background-color: #dadada;
   }
 </style>
 <script>
@@ -47,14 +48,14 @@
   import { oncreate } from '../helpers/onCreateDialog'
 
   export default {
-      oncreate,
-      components: {
-          ModalDialog,
-          Shortcut
-      },
-      methods: {
-          show,
-          close
-      }
+    oncreate,
+    components: {
+      ModalDialog,
+      Shortcut
+    },
+    methods: {
+      show,
+      close
+    }
   }
 </script>

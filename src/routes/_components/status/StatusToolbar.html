@@ -74,22 +74,22 @@
         optionsKey
       } = this.get()
       registerClickDelegates(this, {
-          [favoriteKey]: (e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              this.toggleFavorite()
-          },
-          [reblogKey]: (e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              this.reblog()
-          },
-          [replyKey]: (e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              this.reply()
-          },
-          [optionsKey]: (e) => this.onOptionsClick(e)
+        [favoriteKey]: (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          this.toggleFavorite()
+        },
+        [reblogKey]: (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          this.reblog()
+        },
+        [replyKey]: (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          this.reply()
+        },
+        [optionsKey]: (e) => this.onOptionsClick(e)
       })
       on('postedStatus', this, this.onPostedStatus)
     },

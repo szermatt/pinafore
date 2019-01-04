@@ -52,8 +52,8 @@
     },
     store: () => virtualListStore,
     computed: {
-        'shown': ({ $itemHeights, key }) => $itemHeights[key] > 0,
-        'active': ({ $activeItem, key }) => $activeItem == key
+      'shown': ({ $itemHeights, key }) => $itemHeights[key] > 0,
+      'active': ({ $activeItem, key }) => $activeItem == key
     },
     methods: {
       doRecalculateHeight () {

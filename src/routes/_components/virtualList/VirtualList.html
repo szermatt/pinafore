@@ -18,9 +18,8 @@
     {/if}
   </div>
 </VirtualListContainer>
-<ScrollListShortcuts
-  bind:items=$visibleItems
-  itemToKey={(visibleItem) => visibleItem.key} />
+<ScrollListShortcuts bind:items=$visibleItems
+                     itemToKey={(visibleItem) => visibleItem.key} />
 <style>
   .virtual-list {
     position: relative;
