@@ -20,9 +20,11 @@
     <li><kbd>f</kbd> to favorite the active status</li>
     <li><kbd>b</kbd> to boost the active status</li>
     <li><kbd>r</kbd> to reply to the active status</li>
-    <li><kbd>h</kbd> or <kbd>?</kbd> to show this dialog</li>
+    <li><kbd>h</kbd> or <kbd>?</kbd> to toggle this dialog</li>
     <li><kbd>Backspace</kbd> or <kbd>Esc</kbd> to go back, close dialogs</li>
   </ul>
+
+  <Shortcut scope='modal' key='h|?' on:pressed='close()'/>
 </ModalDialog>
 <style>
   li {
@@ -41,16 +43,20 @@
 </style>
 <script>
   import ModalDialog from './ModalDialog.html'
+  import Shortcut from '../../shortcut/Shortcut.html'
   import { show } from '../helpers/showDialog'
+  import { close } from '../helpers/closeDialog'
   import { oncreate } from '../helpers/onCreateDialog'
 
   export default {
       oncreate,
       components: {
-          ModalDialog
+          ModalDialog,
+          Shortcut
       },
       methods: {
-          show
+          show,
+          close
       }
   }
 </script>
