@@ -3,56 +3,21 @@
       addToShortcutScope,
       removeFromShortcutScope } from '../../_utils/shortcuts'
   export default {
-      data: () => ({scope: 'global', key: null, currentPrefixMap: null}),
+      data: () => ({scope: 'global', key: null}),
       oncreate() {
-	  let {scope} = this.get()
-          addToShortcutScope(scope, this)
+	  let {scope, key} = this.get()
+          addToShortcutScope(scope, key, this)
       },
       ondestroy() {
-          let {scope} = this.get()
-          removeFromShortcutScope(scope, this)
-      },
-      computed: {
-          keyMap: ({key}) => {
-              let keyMap = new Map()
-              if (key) {
-                  key.split('|').forEach(
-                      (seq) => {
-                          let seqArray = seq.split(' ')
-                          let prefixLen = seqArray.length - 1
-                          let currentMap = keyMap;
-                          let i = -1
-                          while (++i < prefixLen) {
-                              let prefixMap = currentMap[seqArray[i]]
-                              if (!prefixMap) {
-                                  prefixMap = new Map()
-                                  currentMap[seqArray[i]] = prefixMap
-                              }
-                              currentMap = prefixMap
-                          }
-                          currentMap[seqArray[seqArray.length - 1]] = true
-                      })
-              }
-              return keyMap
-          }
+          let {scope, key} = this.get()
+          removeFromShortcutScope(scope, key, this)
       },
       methods: {
 	  onKeyDown(event) {
-	      let { keyMap, currentPrefixMap } = this.get()
-              let mapValue = ((currentPrefixMap && currentPrefixMap[event.key])
-                              || keyMap[event.key])
-              if (!mapValue) {
-                  return
-              }
 	      event.stopPropagation()
-              if (mapValue == true) {
-	          this.fire('pressed', {
-		      key: event.key,
-		      timeStamp: event.timeStamp})
-              } else {
-                  currentPrefixMap = mapValue
-                  this.set({currentPrefixMap})
-              }
+	      this.fire('pressed', {
+		  key: event.key,
+		  timeStamp: event.timeStamp})
 	  }
       }
   };

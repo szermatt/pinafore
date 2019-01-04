@@ -4,8 +4,8 @@
       firstVisibleElementIndex,
       scrollIntoViewIfNeeded } from '../../_utils/scrollIntoView'
   import {
-      addToShortcutScope,
-      removeFromShortcutScope,
+      addShortcutFallback,
+      removeShortcutFallback,
       onKeyDownInShortcutScope } from '../../_utils/shortcuts'
   import { smoothScroll } from '../../_utils/smoothScroll'
   import { getScrollContainer } from '../../_utils/scrollContainer'
@@ -25,11 +25,11 @@
       },
       oncreate() {
           let { scope } = this.get()
-          addToShortcutScope(scope, this)
+          addShortcutFallback(scope, this)
       },
       ondestroy() {
           let { scope } = this.get()
-          removeFromShortcutScope(scope, this)
+          removeShortcutFallback(scope, this)
       },
       methods: {
           onKeyDown(event) {
